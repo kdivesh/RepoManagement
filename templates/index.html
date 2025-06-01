@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Create Repository</title>
+
+  <!-- Flatly theme & icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/flatly/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    body { background-color: #e9f7ef; }
+    .card { border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); }
+    .btn-toggle .btn { min-width: 150px; }
+    #resultContainer .alert { border-radius: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container-fluid py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card p-4">
+          <h2 class="text-center mb-4">Create Repository</h2>
+
+          <form id="repoForm" enctype="multipart/form-data" action="javascript:void(0)" onsubmit="return false;">
+            <!-- Platform toggle -->
+            <div class="d-flex justify-content-center mb-4 btn-toggle">
+              <input type="radio" class="btn-check" name="platform" id="platformGithub" value="github" autocomplete="off" checked>
+              <label class="btn btn-outline-primary" for="platformGithub">
+                <i class="bi bi-github"></i> GitHub
+              </label>
+
+              <input type="radio" class="btn-check" name="platform" id="platformAdo" value="ado" autocomplete="off">
+              <label class="btn btn-outline-primary ms-2" for="platformAdo">
+                <i class="bi bi-box-seam"></i> Azure DevOps
+              </label>
+            </div>
+
+            <!-- Two-column layout -->
+            <div class="row gx-3">
+              <!-- GitHub Fields -->
+              <div id="githubFields" class="col-12">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="token" class="form-label">GitHub PAT</label>
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                      <input type="text" class="form-control" id="token" name="token" placeholder="Enter GitHub PAT" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="org_github" class="form-label">Organization (opt.)</label>
+                    <select class="form-select shadow-sm" id="org_github" name="org_github">
+                      <option value="">— Personal Account —</option>
+                      <option value="my-org-1">my-org-1</option>
+                      <option value="my-org-2">my-org-2</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="repo_github" class="form-label">Repository Name</label>
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"><i class="bi bi-folder-fill"></i></span>
+                      <input type="text" class="form-control" id="repo_github" name="repo_github" placeholder="e.g. my-repo" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="description_github" class="form-label">Description</label>
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                      <input type="text" class="form-control" id="description_github" name="description_github" placeholder="Repository description" required>
+                    </div>
+                  </div>
+                  <div class="col-12 mb-4">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="private_github" name="private_github">
+                      <label class="form-check-label" for="private_github">Private Repository</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Azure DevOps Fields -->
+              <div id="adoFields" class="col-12 d-none">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="token_ado" class="form-label">ADO PAT</label>
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                      <input type="text" class="form-control" id="token_ado" name="token_ado" placeholder="Enter Azure DevOps PAT" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="org_url" class="form-label">Org URL</label>
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                      <input type="url" class="form-control" id="org_url" name="org_url" placeholder="https://dev.azure.com/yourorg" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="project" class="form-label">Project Name</label>
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"><i class="bi bi-kanban-fill"></i></span>
+                      <input type="text" class="form-control" id="project" name="project" placeholder="Project Name" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="repo_ado" class="form-label">Repository Name</label>
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"><i class="bi bi-folder-fill"></i></span>
+                      <input type="text" class="form-control" id="repo_ado" name="repo_ado" placeholder="e.g. my-repo" required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ────────── New Metadata Section ────────── -->
+            <h4 class="mt-5 mb-3">Metadata Attributes</h4>
+            <div class="row gx-3">
+              <div class="col-md-6 mb-3">
+                <label for="apm_id" class="form-label">apm_id</label>
+                <input type="text" class="form-control shadow-sm" id="apm_id" name="apm_id" placeholder="APM-000001" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="owner_team" class="form-label">owner_team</label>
+                <input type="text" class="form-control shadow-sm" id="owner_team" name="owner_team" placeholder="platform-team" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="repo_status" class="form-label">repo_status</label>
+                <input type="text" class="form-control shadow-sm" id="repo_status" name="repo_status" placeholder="active" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="tags" class="form-label">tags (comma‑separated)</label>
+                <input type="text" class="form-control shadow-sm" id="tags" name="tags" placeholder="api,springboot,internal" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="created_date" class="form-label">created_date</label>
+                <input type="date" class="form-control shadow-sm" id="created_date" name="created_date" value="2025-04-30" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="description_meta" class="form-label">description</label>
+                <input type="text" class="form-control shadow-sm" id="description_meta" name="description_meta" placeholder="API scanner tool" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="application_name" class="form-label">application name</label>
+                <input type="text" class="form-control shadow-sm" id="application_name" name="application_name" placeholder="API Endpoint finder" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="project_name" class="form-label">project name</label>
+                <input type="text" class="form-control shadow-sm" id="project_name" name="project_name" placeholder="API repo scan" required>
+              </div>
+            </div>
+
+            <!-- File Upload moved below metadata -->
+            <div class="row gx-3">
+              <div class="col-12 mb-4">
+                <label for="metadata_file" class="form-label">Upload Metadata File</label>
+                <input class="form-control shadow-sm" type="file" id="metadata_file" name="metadata_file" accept=".yml,.yaml,.json" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 shadow-sm mt-3">
+              <i class="bi bi-plus-circle"></i> Create Repository
+            </button>
+          </form>
+
+          <!-- Inline result -->
+          <div class="mt-4 d-none" id="resultContainer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const githubFields = document.getElementById('githubFields');
+    const adoFields    = document.getElementById('adoFields');
+    const form         = document.getElementById('repoForm');
+    const resultDiv    = document.getElementById('resultContainer');
+
+    function toggleFields() {
+      const platform = document.querySelector('input[name="platform"]:checked').value;
+      if (platform === 'github') {
+        githubFields.classList.remove('d-none');
+        adoFields.classList.add('d-none');
+        ['token','repo_github','description_github'].forEach(id => document.getElementById(id).required = true);
+        ['token_ado','org_url','project','repo_ado'].forEach(id => document.getElementById(id).required = false);
+      } else {
+        adoFields.classList.remove('d-none');
+        githubFields.classList.add('d-none');
+        ['token_ado','org_url','project','repo_ado'].forEach(id => document.getElementById(id).required = true);
+        ['token','repo_github','description_github'].forEach(id => document.getElementById(id).required = false);
+      }
+    }
+
+    document.querySelectorAll('input[name="platform"]').forEach(radio =>
+      radio.addEventListener('change', toggleFields)
+    );
+    toggleFields();
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      e.stopPropagation();
+      resultDiv.classList.add('d-none');
+
+      const formData = new FormData(form);
+      try {
+        const res  = await fetch('/api/create', { method: 'POST', body: formData });
+        const json = await res.json();
+
+        resultDiv.innerHTML = res.ok
+          ? `<div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> ${json.message}</div>`
+          : `<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> ${json.message}</div>`;
+      } catch {
+        resultDiv.innerHTML = `<div class="alert alert-danger"><i class="bi bi-x-circle-fill"></i> Submission failed</div>`;
+      }
+      resultDiv.classList.remove('d-none');
+    });
+  });
+  </script>
+</body>
+</html>
